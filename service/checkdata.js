@@ -1,0 +1,106 @@
+const {checkString} = require('../utils/checkString');
+const {checkPageRecords} = require('../utils/ckeckPageRecords');
+error = {
+  isError: false,
+  errorMessage: ''
+};
+
+
+//funston checkId
+const checkId = id => {
+  // let error = new Err();
+  error = checkString(id);
+
+  if (error.isError) {
+    // error.isError = true;
+    error.errorMessage.id = 'id' + error.errorMessage;
+
+    return error;
+  }
+  return error;
+}
+
+//function checkPaging
+const checkPaging = (page, records) => {
+  if (page === undefined && records === undefined) {
+    return error;
+  }
+ let check = checkPageRecords(page);
+ if (check.isError){
+   error.isError = true;
+   error.errorMessage.page = 'page' + check.message;
+   return error;
+ }
+
+ check = checkPageRecords(records);
+ if (check.isError) {
+   error.isError = true;
+   error.errorMessage.records = 'records' + check.message;
+   return error;
+ }
+
+ return error;
+}
+
+//check input get all films
+const checkGetAllFilms = input => {
+  const {page, records} = input;
+  return checkPaging(page, records);
+
+}
+
+//check input get all films by id
+const checkGetFilmById = input => {
+  const {id} = input;
+  return checkId(id);
+}
+
+//check input Filter films
+const checkFilterFilms = input => {
+  const {page, records} = input;
+  return checkPaging(page, records);
+}
+
+//check input search film by field
+const checkSearchFilmByField = input => {
+  const {page, records} = input;
+  let error = checkPaging(page, records);
+  if(error.isError) {
+    return error;
+  }
+
+
+//required field
+const fields = ['field', 'value'];
+fields.forEach(field => {
+  if (input[field] === '' || !input[field]) {
+    error.isError = true;
+    error.errorMessage[field] = field + 'must not be empty';
+    return error;
+  }
+});
+return error;
+}
+
+//check input search film
+const checkSearchFilm = input => {
+  const {value, page, records} = input;
+  let error = checkPaging(page, records);
+  if (error.isError){
+    return error;
+  }
+  error = checkString(value);
+  if(error.isError) {
+    // error.isError = true;
+    error.errorMessage.value = 'value' + error.errorMessage;
+  }
+  return error;
+}
+
+module.exports = {
+  checkGetAllFilms,
+  checkFilterFilms,
+  checkGetFilmById,
+  checkSearchFilm,
+  checkSearchFilmByField
+}
