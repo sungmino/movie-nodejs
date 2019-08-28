@@ -5,7 +5,8 @@ const {
   searchFilm,
   deleteFilm,
   filterFilm,
-  searchFilmByField
+  searchFilmByField,
+  relateFilms
 } = require('../data/films.data');
 
 const {
@@ -16,7 +17,9 @@ const {
   setFilterFilmToCache,
   getAllFilmsFromCache,
   setSearchFilmByFieldToCache,
-  getSearchFilmByFieldFromCache
+  getSearchFilmByFieldFromCache,
+  setRelateFilmToCache,
+  getRelateFilmFromCache
 
 } = require('../data/films.cache');
 
@@ -25,7 +28,8 @@ const {
   checkFilterFilms,
   checkGetFilmById,
   checkSearchFilm,
-  checkSearchFilmByField
+  checkSearchFilmByField,
+  checkRelateFilms
 } = require('./checkdata');
 const error = {
   isError: false,
@@ -35,14 +39,15 @@ const error = {
 const getAllFilmsSV = async (req, res) => {
   // console.log('hello');
   const query = { ...req.query };
+  const {page, records} = req.query;
   var error = checkGetAllFilms(query);
   if (error.isError) {
     return res.status(400).send({ error });
   }
-  const { page, records } = req.query;
-  let films = await getAllFilmsFromCache(page, records);
+  const input = { page, records };
+  var films = await getAllFilmsFromCache(input);
   if(!films){
-    const films = await getAllFilms(page, records);
+    films = await getAllFilms(page, records);
     setAllFilmsToCache(page, records, films);
     if (!films || films.length === 0) {
       error.isError = true;
@@ -74,7 +79,7 @@ const getFilmByIdSV = async (req, res) => {
   var { id } = req.query;
   var film = await getFilmById(id);
 
-  console.log(film);
+  // console.log(film);
 
   if (!film || film.length === 0) {
     error.isError = true;
@@ -95,26 +100,23 @@ const searchFilmSV = async (req, res) => {
   if (error.isError) {
     return res.status(400).send({ error });
   }
-  const input = { value };
+  const input = { value, page, records };
 
-  let data = await getSearchFilmsFromCache(input, page, records)
-  if (data) {
-    return res.status(200).send({data});
-  }else {
-    const film = await searchFilm(input, page, records);
+  let data = await getSearchFilmsFromCache(input);
+  if (!data) {
+    data = await searchFilm(input);
 
-    setSearchFilmsToCache(input, page, records, film);
-    console.log(film);
-    if (!film || film.length === 0) {
+    setSearchFilmsToCache(input, data);
+    // console.log(data);
+    if (!data || data.length === 0) {
       error.isError = true;
       error.errorMessage.data = 'Not Found';
 
       return res.status(404).send({ error });
 
-    } else {
-      return res.status(200).send({ film });
     }
   }
+  return res.status(200).send({ data });
   }
 
 // Tim kiem phim by field
@@ -131,24 +133,19 @@ const searchFilmByFieldSV = async (req, res) => {
   if (error.isError) {
     return res.status(400).send({ error });
   }
-  var input = { field, value }
-
-  let data = {};
-
-  data = await getSearchFilmByFieldFromCache(input, page, records);
-  if (data) {
-    return res.status(200).send({data});
-  }else{
-    let data = await searchFilmByField(input, page, records);
-    setSearchFilmByFieldToCache(input, page, records, data);
-    if (!data || data.films.length == 0 || !data.films == null) {
+  var input = { field, value, page, records };
+  let films = await getSearchFilmByFieldFromCache(input);
+  if (!films) {
+    films = await searchFilmByField(input);
+    if (!films || films.length == 0) {
       error.isError = true;
       error.errorMessage.data = 'Not Found';
       return res.status(404).send({ error });
-    } else {
-      return res.status(200).send({ data });
+    }else {
+      setSearchFilmByFieldToCache(input, films);
     }
   }
+  return res.status(200).send({ films });
 }
 
 // Loc phim
@@ -166,18 +163,20 @@ const filterFilmSV = async (req, res) => {
     arrange: Number.parseInt(arrange),
     country,
     type,
-    year
+    year,
+    page,
+    records
   };
 
   const query = { ...req.query };
-  error = checkFilterFilms(query);
+  var error = checkFilterFilms(query);
   if (error.isError) {
     return res.status(400).send({ error });
   }
-  var data = await getFilterFilmFromCache(input, page, records);
-  if (data == null) {
-    data = await filterFilm(input, page, records);
-    setFilterFilmToCache(input, page, records, data);
+  var data = await getFilterFilmFromCache(input);
+  if (!data) {
+    data = await filterFilm(input);
+    setFilterFilmToCache(input, data);
   }
 
   //  console.log(data);
@@ -194,8 +193,35 @@ const filterFilmSV = async (req, res) => {
   });
 }
 
+
+//phim lien quan
+const relateFilmSV = async (req, res) => {
+  const query = {...req.query};
+  var error = checkRelateFilms(query);
+  if (error.isError) {
+    return res.status(400).send({error});
+  }
+
+  var {id, page, records } = req.query;
+  const input = { id, page, records };
+  var films = await getRelateFilmFromCache(input);
+  if(!films) {
+    films = await relateFilms(input);
+
+    if(!films || films.length == 0) {
+      error.isError = true;
+      error.errorMessage.films = 'Not Found';
+
+      return res.status(404).send({error});
+    }else {
+      setRelateFilmToCache(input, films);
+    }
+  }
+  return res.status(200).send({films});
+}
+
 //Xoa phim
-const deleteFilmSV = async (id) => {
+const deleteFilmSV = async (req, res) => {
   var { id } = req.query;
 
   await deleteFilm(id);
@@ -215,5 +241,6 @@ module.exports = {
   searchFilmByFieldSV,
   getFilmByIdSV,
   deleteFilmSV,
-  filterFilmSV
+  filterFilmSV,
+  relateFilmSV
 }

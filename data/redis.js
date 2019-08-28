@@ -1,4 +1,4 @@
-const {client} = require('../data/redis.connect');
+const { client } = require('../data/redis.connect');
 
 const makeKey = (input, page, records, fields) => {
   let key = '';

@@ -160,7 +160,43 @@ let films = await Film
 }
 
 //Phim lien quan
- const relateFilms = async (id) => {
+ const relateFilms = async input => {
+   let { id, page = 1, records = 24} = input;
+   page = Number.parseInt(page);
+   records = Number.parseInt(records);
+
+   const currenFilm = await Film.findById(id);
+   const fields = ['tags', 'directors', 'characters'];
+   let filter = [];
+
+   fields.forEach(field => {
+     const key = currenFilm[field];
+     if (key) {
+       key.forEach(value => {
+         let temp = {};
+
+         temp[field] = new RegExp(value, 'i');
+         filter.push({...temp });
+       });
+     }
+   });
+
+   if (filter.length === 0) {
+     return null;
+   }
+
+   const films = await Film 
+     .find({
+       $or: [
+         ...filter
+       ]
+     })
+     .skip((page - 1) * records)
+     .limit(records);
+
+    return {
+      films
+    }
    
  }
   module.exports = {

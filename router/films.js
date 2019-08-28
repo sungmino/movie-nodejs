@@ -7,7 +7,8 @@ const {
   getFilmByIdSV,
   deleteFilmSV,
   filterFilmSV,
-  searchFilmByFieldSV
+  searchFilmByFieldSV,
+  relateFilmSV
 } = require('../service/films.service');
 const router = express.Router();
 
@@ -31,15 +32,7 @@ router.get('/filter', filterFilmSV);
 
 //Them 1 phim
 router.post('/', addFilmSV );
-//   let error = {
-//     isError: false,
-//     errorMessage: {}
-//   };
-//   const input = {...req.body};
-//   error = await addFilmSV(input);
-//   if(error.isError) {
-//     return res.status(201).send({error});
-//   }
-//   return res.status(201).send({error});
-// });
+
+//phim lien quan
+router.get('/relate', relateFilmSV);
 module.exports = router;

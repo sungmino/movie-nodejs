@@ -61,6 +61,19 @@ const checkFilterFilms = input => {
   return checkPaging(page, records);
 }
 
+const checkSearchFilmByFieldInput = input => {
+  const { page, records } = input;
+  let error = checkPaging(page, records);
+  if (error.isError) {
+    return error;
+  }
+
+  error = checkSearchFilmByField(input);
+  if (error.isError) {
+    return error;
+  }
+  return error;
+}
 //check input search film by field
 const checkSearchFilmByField = input => {
   const {page, records} = input;
@@ -68,7 +81,6 @@ const checkSearchFilmByField = input => {
   if(error.isError) {
     return error;
   }
-
 
 //required field
 const fields = ['field', 'value'];
@@ -97,10 +109,26 @@ const checkSearchFilm = input => {
   return error;
 }
 
+//check input phim lien quan
+const checkRelateFilms = input => {
+  const {id, page, records} = input;
+  let error = checkId(id);
+  if(error.isError) {
+    return error;
+  }
+  error = checkPaging(page, records);
+  if(error.isError) {
+    return error;
+  }
+  return error;
+}
+
 module.exports = {
   checkGetAllFilms,
   checkFilterFilms,
   checkGetFilmById,
   checkSearchFilm,
-  checkSearchFilmByField
+  checkSearchFilmByField,
+  checkSearchFilmByFieldInput,
+  checkRelateFilms
 }
