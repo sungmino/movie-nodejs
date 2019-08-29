@@ -1,9 +1,11 @@
 const {checkString} = require('../utils/checkString');
 const {checkPageRecords} = require('../utils/ckeckPageRecords');
-error = {
-  isError: false,
-  errorMessage: ''
-};
+const Err = class {
+  constructor(isError = false, errorMessage = {}) {
+    this.isError = isError,
+    this.errorMessage = errorMessage;
+  }
+}
 
 
 //funston checkId
@@ -22,6 +24,7 @@ const checkId = id => {
 
 //function checkPaging
 const checkPaging = (page, records) => {
+  let error = new Err();
   if (page === undefined && records === undefined) {
     return error;
   }
@@ -83,12 +86,12 @@ const checkSearchFilmByField = input => {
   }
 
 //required field
-const fields = ['field', 'value'];
-fields.forEach(field => {
-  if (input[field] === '' || !input[field]) {
-    error.isError = true;
-    error.errorMessage[field] = field + 'must not be empty';
-    return error;
+  const fields = ['field', 'value'];
+  fields.forEach(field => {
+    if (input[field] === '' || !input[field]) {
+      error.isError = true;
+      error.errorMessage[field] = field + 'must not be empty';
+      return error;
   }
 });
 return error;
@@ -101,10 +104,12 @@ const checkSearchFilm = input => {
   if (error.isError){
     return error;
   }
-  error = checkString(value);
-  if(error.isError) {
-    // error.isError = true;
-    error.errorMessage.value = 'value' + error.errorMessage;
+  const err = checkString(value);
+  if(err.isError) {
+    error.isError = true;
+    error.errorMessage.value = 'value' + err.message;
+
+    return error;
   }
   return error;
 }

@@ -28,22 +28,21 @@ const {
   checkFilterFilms,
   checkGetFilmById,
   checkSearchFilm,
-  checkSearchFilmByField,
+  checkSearchFilmByFieldInput,
   checkRelateFilms
 } = require('./checkdata');
-const error = {
-  isError: false,
-  errorMessage: ''
-}
+// const error = {
+//   isError: false,
+//   errorMessage: ''
+// }
 //Lay tat ca films
 const getAllFilmsSV = async (req, res) => {
-  // console.log('hello');
   const query = { ...req.query };
-  const {page, records} = req.query;
-  var error = checkGetAllFilms(query);
+  var error = await checkGetAllFilms(query);
   if (error.isError) {
     return res.status(400).send({ error });
   }
+  const {page, records} = req.query;
   const input = { page, records };
   var films = await getAllFilmsFromCache(input);
   if(!films){
@@ -72,7 +71,7 @@ const addFilmSV = async (req, res) => {
 
 const getFilmByIdSV = async (req, res) => {
   var query = { ...req.query };
-  let error = checkGetFilmById(query);
+  const error = checkGetFilmById(query);
   if (error.isError) {
     return res.status(400).send({ error });
   }
@@ -94,12 +93,13 @@ const getFilmByIdSV = async (req, res) => {
 // Tim kiem phim
 const searchFilmSV = async (req, res) => {
   // console.log('hello')
-  const { value, page, records } = req.query;
   var query = { ...req.query };
-  var error = checkSearchFilm(query);
+  console.log(query);
+  var error = await checkSearchFilm(query);
   if (error.isError) {
     return res.status(400).send({ error });
   }
+  const { value, page, records } = req.query;
   const input = { value, page, records };
 
   let data = await getSearchFilmsFromCache(input);
@@ -127,9 +127,8 @@ const searchFilmByFieldSV = async (req, res) => {
     page,
     records
   } = req.query;
-
   const query = { ...req.query };
-  var error = checkSearchFilmByField(query);
+  var error = await checkSearchFilmByFieldInput(query);
   if (error.isError) {
     return res.status(400).send({ error });
   }
@@ -146,6 +145,7 @@ const searchFilmByFieldSV = async (req, res) => {
     }
   }
   return res.status(200).send({ films });
+
 }
 
 // Loc phim

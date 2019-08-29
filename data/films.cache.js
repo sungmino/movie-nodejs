@@ -78,7 +78,8 @@ const getSearchFilmsFromCache = input => {
 
   console.log('get search films in cache');
 
-  const key = makeKey({ input }, page, records, fieldSearchFilm);
+  // const key = makeKey({ input }, page, records, fieldSearchFilm);
+  const key = makeKey(input, page, records, fieldSearchFilm);
   return getDataFromRedis(key);
 }
 
@@ -104,6 +105,7 @@ const getSearchFilmByFieldFromCache = input => {
 }
 
 const setFilmIdToCache = (id, film ) => {
+  // const key = makeKeyTotal({ id: id}, fieldFilmId);
   const key = makeKeyTotal({ id: id}, fieldFilmId);
   storeToRedis(key, film, timoutFilmId);
 }
@@ -119,7 +121,8 @@ const setRelateFilmToCache = (input, films) => {
     return;
   }
 
-  const key = makeKey({id}, page, records, fieldRelateFilms);
+  // const key = makeKey({id}, page, records, fieldRelateFilms);
+  const key = makeKey(id, page, records, fieldRelateFilms);
   storeToRedis(key, timeoutRelateFilms, films);
 }
 
@@ -129,7 +132,7 @@ const getRelateFilmFromCache = input => {
     return;
   }
 
-  const key = makeKey({id}, page, records, fieldRelatedFilms);
+  const key = makeKey(id, page, records, fieldRelatedFilms);
   return getDataFromRedis(key);
 }
 module.exports = {
