@@ -1,16 +1,33 @@
 const Film = require('../service/film.model');
+const {
+  setTotalAllFilmsToCache,
+  getTotalAllFilmsToCache,
+  setTotalRelateFilmsToCache,
+  getTotalRelateFilmsToCache,
+  setTotalSearchByFieldFilmsToCache,
+  getTotalSearchByFieldFilmsToCache,
+  setTotalFilterFilmsToCache,
+  getTotalFilterFilmsToCache
+} = require('./films.cache');
 
 //Lay toan bo phim
 const getAllFilms = async (page = 1, records = 24) => {
     page = Number.parseInt(page);
     records = Number.parseInt(records);
 
+    allRecords = await getTotalAllFilmsToCache();
+    if (!allRecords && allRecords !==0 ) {
+      allRecords = await Film.countDocuments({});
+      setTotalAllFilmsToCache(allRecords);
+    }
+
     const films = await Film
     .find({})
     .skip((page - 1) * records)
     .limit(records);
-return {
-  films
+  return {
+  films,
+  allRecords
 }
 
 }
@@ -59,8 +76,16 @@ const searchFilmByField = async (input, page = 1, records = 24) => {
   const { field, value } = input;
 
   let query = {};
+  let allRecords = 0;
 
   query[field] = new RegExp(value, 'i');
+  allRecords = await getTotalSearchByFieldFilmsToCache(input);
+  if (!allRecords && allRecords !== 0 ) {
+    allRecords = await Film.countDocuments({
+      ...query
+    });
+    setTotalSearchByFieldFilmsToCache(input, allRecords)
+  }
 
   const films = await Film
     .find({
@@ -70,7 +95,8 @@ const searchFilmByField = async (input, page = 1, records = 24) => {
     .limit(records);
   
   return {
-    films
+    films,
+    allRecords
   }
 }
 
@@ -92,7 +118,7 @@ const searchFilm = async (input, page = 1, records = 24) => {
       })
       .skip((page - 1) * records)
       .limit(records);
-    return films;
+    return {films};
 }
 
 //xoa phim
@@ -101,6 +127,8 @@ const deleteFilm = id => {
  }
 
 const filterFilm = async (input, page = 1, records = 24) => {
+   page = Number.parseInt(page);
+   records = Number.parseInt(records);
    const fields = ['category', 'country', 'type'];
    let query = {};
    let where = null;
@@ -113,6 +141,15 @@ const filterFilm = async (input, page = 1, records = 24) => {
    });
 
    where = input.year ? `this.dateReleased.getFullYear() == ${input.year}`: `/./`;
+
+   allRecords = await getTotalFilterFilmsToCache(input);
+   if (!allRecords && allRecords !== 0 ){
+     allRecords = await Film.count({
+       ...query,
+       $where: where
+     });
+     setTotalFilterFilmsToCache(input, allRecords);
+   }
 switch (input.arrange) {
     case 0: 
       console.log('sort by dateCreate:');
@@ -155,12 +192,13 @@ let films = await Film
    .limit(records)
 
    return {
-       films
+       films,
+       allRecords
    };
 }
 
 //Phim lien quan
- const relateFilms = async input => {
+ const relateFilms = async (input) => {
    let { id, page = 1, records = 24} = input;
    page = Number.parseInt(page);
    records = Number.parseInt(records);
@@ -168,6 +206,7 @@ let films = await Film
    const currenFilm = await Film.findById(id);
    const fields = ['tags', 'directors', 'characters'];
    let filter = [];
+   let allRecords = 0;
 
    fields.forEach(field => {
      const key = currenFilm[field];
@@ -184,6 +223,15 @@ let films = await Film
    if (filter.length === 0) {
      return null;
    }
+   allRecords = await getTotalRelateFilmsToCache(id);
+   if (!allRecords && allRecords !== 0) {
+     allRecords = await Film.countDocuments({
+       $or: [
+         ...filter
+       ]
+     });
+     setTotalRelateFilmsToCache(id, allRecords);
+   }
 
    const films = await Film 
      .find({
@@ -195,7 +243,8 @@ let films = await Film
      .limit(records);
 
     return {
-      films
+      films,
+      allRecords
     }
    
  }

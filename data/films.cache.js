@@ -6,13 +6,16 @@ const {
   timeoutSearchFilm,
   timeoutSearchFilmByField,
   limitedPagesCache,
-  timeoutRelateFilms
+  timeoutRelateFilms,
+  timeoutTotalAllFilms,
+  timeoutTotalFilterFilms,
+  timeoutTotalSearchFilmsByField,
+  timeoutTotalRelateFilms,
 } = require('../config/redis.config');
 const fieldFilterFilms = ['category', 'arrange', 'country', 'type', 'year'];
 const fieldsAllFilms = ['allFilms'];
 const fieldSearchFilmByField = ['field', 'value'];
 const fieldSearchFilm = ['value'];
-const fieldRelatedFilms = ['id'];
 const fieldFilmId = ['id'];
 const fieldRelateFilms = ['id']
 const setAllFilmsToCache = async (page = 1, records = 24, films) => {
@@ -20,7 +23,7 @@ const setAllFilmsToCache = async (page = 1, records = 24, films) => {
     return;
   }
 
-  // console.log('set all films to cache');
+  console.log('set all films to cache');
   const key = makeKey({}, page, records, fieldsAllFilms);
 
   storeToRedis(key, films, timeoutAllFilms);
@@ -79,7 +82,7 @@ const getSearchFilmsFromCache = input => {
   console.log('get search films in cache');
 
   // const key = makeKey({ input }, page, records, fieldSearchFilm);
-  const key = makeKey(input, page, records, fieldSearchFilm);
+  const key = makeKey({input}, page, records, fieldSearchFilm);
   return getDataFromRedis(key);
 }
 
@@ -89,7 +92,7 @@ const setSearchFilmByFieldToCache = (input, films) => {
     return;
   }
 
-  console.log('set search film by field to cache');
+  console.log('set data search film to cache');
   const key = makeKey(input, page, records, fieldSearchFilmByField);
 
   storeToRedis(key, films, timeoutSearchFilmByField);
@@ -100,6 +103,7 @@ const getSearchFilmByFieldFromCache = input => {
   if (page > limitedPagesCache) {
     return;
   }
+  console.log('get data search film from cache');
   const key = makeKey(input , page, records, fieldSearchFilmByField);
   return getDataFromRedis(key);
 }
@@ -135,6 +139,43 @@ const getRelateFilmFromCache = input => {
   const key = makeKey(id, page, records, fieldRelatedFilms);
   return getDataFromRedis(key);
 }
+
+//----------Total Records--------------------------
+const setTotalAllFilmsToCache = allRecords => {
+  const key = makeKeyTotal({}, fieldsAllFilms);
+  storeToRedis(key, allRecords, timeoutTotalAllFilms);
+}
+const getTotalAllFilmsToCache = () => {
+  const key = makeKeyTotal({}, fieldsAllFilms);
+  return getDataFromRedis(key);
+}
+//----
+const setTotalSearchByFieldFilmsToCache = (input, allRecords) => {
+  const key = makeKeyTotal(input, fieldSearchFilmByField);
+  storeToRedis(key, allRecords, timeoutTotalSearchFilmsByField);
+}
+const getTotalSearchByFieldFilmsToCache = input => {
+  const key = makeKeyTotal(input, fieldSearchFilmByField);
+  return getDataFromRedis(key);
+}
+//----
+const setTotalFilterFilmsToCache = (input, allRecords) => {
+  const key = makeKeyTotal(input, fieldFilterFilms);
+  storeToRedis(key, allRecords, timeoutTotalFilterFilms);
+}
+const getTotalFilterFilmsToCache = input => {
+  const key = makeKeyTotal(input, fieldFilterFilms);
+  return getDataFromRedis(key);
+}
+//----
+const setTotalRelateFilmsToCache = (id, allRecords) => {
+  const key = makeKeyTotal({id}, fieldRelateFilms);
+  storeToRedis(key, allRecords, timeoutTotalRelateFilms);
+}
+const getTotalRelateFilmsToCache = id => {
+  const key = makeKeyTotal({id}, fieldRelateFilms);
+  return getDataFromRedis(key);
+}
 module.exports = {
   setAllFilmsToCache,
   getAllFilmsFromCache,
@@ -147,5 +188,15 @@ module.exports = {
   setFilmIdToCache,
   getFilmIdFromCache,
   setRelateFilmToCache,
-  getRelateFilmFromCache
+  getRelateFilmFromCache,
+
+
+  setTotalAllFilmsToCache,
+  getTotalAllFilmsToCache,
+  setTotalRelateFilmsToCache,
+  getTotalRelateFilmsToCache,
+  setTotalSearchByFieldFilmsToCache,
+  getTotalSearchByFieldFilmsToCache,
+  setTotalFilterFilmsToCache,
+  getTotalFilterFilmsToCache
 }
