@@ -1,51 +1,48 @@
-const { client } = require('../data/redis.connect');
+const { client } = require('../data/redis.connect')
 
 const makeKey = (input, page, records, fields) => {
-  let key = '';
+  let key = ''
 
   fields.forEach(field => {
-    if(input[field]) {
-      key += field + '|' + input[field].toString().trim().toLowerCase() + '/';
-
+    if (input[field]) {
+      key += field + '|' + input[field].toString().trim().toLowerCase() + '/'
     } else {
-      key += field + '|' + input[field] + '/';
+      key += field + '|' + input[field] + '/'
     }
-  });
-  key += 'page' + '|' + page + '/';
-  key += 'records' + '|' + records;
+  })
+  key += 'page' + '|' + page + '/'
+  key += 'records' + '|' + records
 
-  return key;
-
+  return key
 }
 
 const makeKeyTotal = (input, fields) => {
-  let key = '';
+  let key = ''
   fields.forEach(field => {
-    if(input[field]) {
-      key += field + '|' + input[field].toString().trim().toLowerCase() + '/';
-
+    if (input[field]) {
+      key += field + '|' + input[field].toString().trim().toLowerCase() + '/'
     } else {
-      key += field + '|' + input[field] + '/';
+      key += field + '|' + input[field] + '/'
     }
-  });
-  return key;
+  })
+  return key
 }
 
 const storeToRedis = (key, value, timeout) => {
-  const valueString = JSON.stringify(value);
+  const valueString = JSON.stringify(value)
   client.setex(key, timeout, valueString, () => {
-  });
+  })
 }
 
 const getDataFromRedis = key => {
   return new Promise((resolve, reject) => {
     client.get(key, (error, result) => {
       if (error) {
-        reject(error);
+        reject(error)
       }
-      resolve(JSON.parse(result));
-    });
-  });
+      resolve(JSON.parse(result))
+    })
+  })
 }
 
 module.exports = {

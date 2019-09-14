@@ -1,12 +1,11 @@
-const express = require('express');
-const router = express.Router();
-const filmModel = require('../service/film.model');
+const express = require('express')
+const router = express.Router()
 // set up express app
-const app = express();
-router.get('/ninjas', function(req, res){
-  res.send({type: 'GET'});
-});
-router.post('/', (req, res) => {
+const app = express()
+app.get('/ninjas', function (req, res) {
+  res.send({ type: 'GET' })
+})
+app.post('/', (req, res) => {
   console.log(req.body)
 })
-module.exports = router;
+module.exports = router

@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require('express')
 
 const {
   getAllFilmsSV,
@@ -9,30 +9,30 @@ const {
   filterFilmSV,
   searchFilmByFieldSV,
   relateFilmSV
-} = require('../service/films.service');
-const router = express.Router();
+} = require('../service/films.service')
+const router = express.Router()
 
-//Lay toan bo phim
-router.get('/', getAllFilmsSV);
+// Lay toan bo phim
+router.get('/', getAllFilmsSV)
 
-//Lay phim theo id
-router.get('/id', getFilmByIdSV);
+// Lay phim theo id
+router.get('/id', getFilmByIdSV)
 
 // Search phim
-router.get('/search', searchFilmSV );
+router.get('/search', searchFilmSV)
 
 // Search phim by field
-router.get('/search/field', searchFilmByFieldSV);
+router.get('/search/field', searchFilmByFieldSV)
 
 // xoa phim
-router.delete('/', deleteFilmSV);
+router.delete('/', deleteFilmSV)
 
 // Loc phim
-router.get('/filter', filterFilmSV);
+router.get('/filter', filterFilmSV)
 
-//Them 1 phim
-router.post('/', addFilmSV );
+// Them 1 phim
+router.post('/', addFilmSV)
 
-//phim lien quan
-router.get('/relate', relateFilmSV);
-module.exports = router;
+// phim lien quan
+router.get('/relate', relateFilmSV)
+module.exports = router

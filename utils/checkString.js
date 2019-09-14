@@ -1,33 +1,33 @@
 const checkString = str => {
-  let error = {
+  const error = {
     isError: false,
     errorMessage: ''
   }
 
   if (str === undefined || str === null) {
-    error.isError = true;
-    error.errorMessage = 'is required';
+    error.isError = true
+    error.errorMessage = 'is required'
 
-    return error;
+    return error
   }
 
   if (typeof str !== 'string') {
-    error.isError = true;
-    error.errorMessage = 'must be a string';
+    error.isError = true
+    error.errorMessage = 'must be a string'
 
-    return error;
+    return error
   }
 
-  str = str.trim();
+  str = str.trim()
 
   if (str === '') {
-    error.isError = true;
-    error.erroMessage = 'must not be empty';
+    error.isError = true
+    error.erroMessage = 'must not be empty'
 
-    return error;
+    return error
   }
 
-  return error;
+  return error
 }
 
 module.exports = {

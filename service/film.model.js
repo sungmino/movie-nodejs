@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
-const Schema = mongoose.Schema;
+const Schema = mongoose.Schema
 
 const FilmSchema = new Schema({
   title: {
@@ -93,9 +93,9 @@ const FilmSchema = new Schema({
     required: true
   },
   ratingNumber: {
-   type: Number,
-   required: true,
-   default: 0
+    type: Number,
+    required: true,
+    default: 0
   },
   views: {
     type: Number,
@@ -111,37 +111,7 @@ const FilmSchema = new Schema({
     require: false,
     default: null
   }
-});
+})
 
-module.exports = Film = mongoose.model('Film', FilmSchema);
-
-// const newFilm = new Film({
-//   title: {
-//     title_en: "english",
-//     title_vn: "vietname"
-//   },
-//   supportedResolution: ['144', '480', '720', '1080'],
-//   // dateReleased: '28/8/2019',
-//   category: ['De cu', 'phim bo', 'phim le'],
-//   country: 'Viet Nam',
-//   time: '',
-//   episodeNumber: 1,
-//   imdb: 10,
-//   scripts: ['Not info'],
-//   directors: ['Not'],
-//   characters: ['No', 'nhung nguoi ban'],
-//   description: 'Phim ve Duy va nhung nguoi ban',
-//   trailer: 'No',
-//   image: '1234.jpg',
-//   thumb: '1232.jpg',
-//   type:['Vien tuong', 'Khoa hoc', 'Kinh di'],
-//   links: ['youtube.com.vn'],
-//   ratingNumber: 0,
-//   views: 0,
-//   tags: ['tai lieu'],
-//   content: 'Phim hay'
-// });
-// newFilm.save((err, newUser) => {
-//   if (err) throw err;
-//   console.log(newFilm)
-// })
+const Film = mongoose.model('Film', FilmSchema)
+module.exports = Film

@@ -1,26 +1,26 @@
 const checkPageRecords = number => {
-  const temp = Number.parseInt(number);
+  const temp = Number.parseInt(number)
 
-  let error = {
+  const error = {
     isError: false,
     message: ''
   }
 
   if (!Number.isInteger(temp)) {
-    error.isError = true;
-    error.message = 'must be an integer number';
+    error.isError = true
+    error.message = 'must be an integer number'
 
-    return error;
+    return error
   }
 
   if (temp <= 0) {
-    error.isError = true;
-    error.message = 'must be greater than 0';
+    error.isError = true
+    error.message = 'must be greater than 0'
 
-    return error;
+    return error
   }
 
-  return error;
+  return error
 }
 
 module.exports = {
