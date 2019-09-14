@@ -1,7 +1,7 @@
 {
   "name": "movie",
-  "version": "1.0.0",
-  "description": "",
+  "version": "2.0.0",
+  "description": "Back-end website movie-store",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -9,7 +9,7 @@
     "lint": "standard",
     "lint-fix": "standard --fix"
   },
-  "author": "",
+  "author": "sungmino",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
